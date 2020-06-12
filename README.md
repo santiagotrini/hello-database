@@ -249,8 +249,140 @@ WriteResult({ "nInserted" : 1 })
 bye
 ```
 
-Listo, tenemos base de datos para hacer _queries_.
+Listo, tenemos base de datos. Pero volvamos a lo que nos importa, hacer una API para esa base de datos.
+
+## Las rutas de la API
+
+La idea de hacer una API con Express es poder interactuar con una base de datos por medio de URLs en el navegador (o en alguna aplicación por medio de HTTP).
+
+Para eso usamos **rutas**, que no son mas que URLs, pero siguiendo algún esquema predecible. Por ser la primera vez lo hacemos super simple. Vamos a tener dos tipos de rutas, una que me devuelva todos los usuarios de la colección `users` y otro tipo de ruta que me devuelva un usuario particular según el id del usuario.
+
+En la terminal hacemos unas carpetas y un archivo.
+
+```
+$ mkdir routes
+$ cd routes
+$ mkdir api
+$ touch user.js
+```
+
+En `user.js` creamos un _router_ y definimos las rutas.
+
+```js
+// user.js
+
+// usamos express
+const express = require('express');
+
+// creamos un router
+const router = express.Router();
+
+// GET a /api/users (todos los usuarios)
+router.get('/users', (req, res) => {
+  res.send('todos los usuarios');
+});
+
+// GET a /api/user/id (un solo usuario)
+router.get('/user/:id', (req, res) => {
+  res.send('el usuario con id ' + req.params.id);
+});
+
+// hay que exportar el router para usarlo en index.js
+module.exports = router;
+```
+
+Luego modificamos `index.js` para usar estas rutas.
+
+```js
+// index.js
+
+// ahora tambien importamos mongoose
+const express  = require('express');
+const mongoose = require('mongoose');
+
+// importamos el router que creamos para la api
+const router = require('./routes/api/user');
+
+// puerto y base de datos
+const port = process.env.PORT        || 3000;
+const db   = process.env.MONGODB_URI || 'mongodb://localhost/hellodb';
+
+const app = express();
+
+// conexion a la base de datos
+mongoose.set('useUnifiedTopology', true);
+mongoose.set('useFindAndModify', false);
+mongoose
+  .connect(db, { useNewUrlParser: true })
+  .then(() => {
+    console.log(`DB connected @ ${db}`);
+  })
+.catch(err => console.error(`Connection error ${err}`));
+
+// usamos el router
+app.use('/api', router);
+
+// el server escucha todo
+app.listen(port, () => {
+  console.log(`Server listening on port ${port}`);
+});
+```
+
+Si ejecutamos el server con `npm start` y vamos a http://localhost:3000/api/users o http://localhost:3000/api/user/1 podemos verificar que todo funcione.
+
+Claro que falta traer la información de la base de datos, para eso tenemos que usar Mongoose para hacer _queries_.
 
 ## Haciendo queries
+
+Una _query_ (plural _queries_) es una consulta a una base de datos. Antes hicimos una _query_ en la shell de Mongo.
+
+```
+> db.users.find()
+```
+
+Esa _query_ me devuelve todos los documentos de la colección `users`. Con Mongoose podemos hacer lo mismo desde JavaScript usando el modelo que creamos antes. Vamos a modificar `user.js` (el de `routes/api`).
+
+```js
+// user.js
+
+// usamos express
+const express = require('express');
+
+// creamos un router
+const router = express.Router();
+
+// importamos el modelo User
+// la ruta del archivo del modelo es relativa a la de user.js
+const User = require('../../models/User');
+
+// GET a /api/users (todos los usuarios)
+router.get('/users', (req, res) => {
+  User.find((err, users) => {
+    if (err) throw err;
+    res.status(200).json(users);
+  });
+});
+
+// GET a /api/user/id (un solo usuario)
+router.get('/user/:id', (req, res) => {
+  User.findOne({ id: req.params.id }, (err, user) => {
+    if (err) throw err;
+    res.status(200).json(user);
+  });
+});
+
+// hay que exportar el router para usarlo en index.js
+module.exports = router;
+```
+
+Observen que la ruta `/user/:id` en realidad no es una sola sino muchas. El `:id` indica que ese valor es un parámetro de la ruta y todos los parámetros están disponibles en `req.params`.
+
+Ahora ya no respondemos a la petición con `res.send` sino con `res.json` que toma un objeto o array de objetos y los devuelve en formato JSON. El `res.status(200)` es para indicar el _status code_ de HTTP (200 significa OK).
+
+Adelante, ejecuten el server y prueben las rutas en el navegador: http://localhost:3000/api/users o http://localhost:3000/api/user/2. Un consejo, Firefox formatea el JSON de manera más piola que Chrome, veanlo ustedes mismos.
+
+Listo, API terminada. Pueden subir esta app a Heroku como hicimos la vez anterior. El único problema es que cuando el server esté online en Heroku no va a tener una base de datos a la cual conectarse. Para eso vamos a usar MongoDB Atlas.
+
+## Creando la base de datos (otra vez)
 
 Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.

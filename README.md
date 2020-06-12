@@ -105,7 +105,151 @@ DB connected @ mongodb://localhost/hellodb
 
 ## Creando la base de datos
 
-Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+Tenemos que crear una base de datos para trabajar. Lo hacemos mediante un sencillo script usando Mongoose. Las bases de datos de MongoDB guardan la información en colecciones de documentos. Las colecciones pueden ser usuarios, animales, compras o lo que ustedes quieran. Los documentos son objetos de JavaScript. En nuestro caso vamos a tener una colección de usuarios, y el objeto que represente un usuario va a tener esta pinta.
+
+```js
+{
+  id: 1,
+  name: 'Juan',
+  mail: 'juan@mail.com',
+  birthday: '2000-01-14'
+}
+```
+
+Cada usuario va a ser un documento en la colección de usuarios. Una colección no es más que un array de objetos con idéntica estructura. Por si todavía no se enteraron la idea acá es que (casi) todo se hace en JavaScript, bases de datos incluídas.
+
+Para que Mongoose interactúe con MongoDB tenemos que crear **modelos**. Un modelo es un objeto que describe una colección, y lo hacemos generalmente en un archivo separado dentro de una carpeta llamada `models`. Así que en la terminal.
+
+```
+$ mkdir models
+$ cd models
+$ touch User.js
+```
+
+La convención es usar SnakeCase y nombres en singular para los nombres de los archivos de los modelos. Si tenemos un modelo de animales será `Animal.js`. Si tenemos animales de zoológico será `ZooAnimal.js`. El archivo `models/User.js` quedaría así.
+
+```js
+// User.js
+
+// necesitamos importar mongoose
+const mongoose = require('mongoose');
+
+// los modelos se crean a partir de un schema
+const UserSchema = new mongoose.Schema({
+  id: Number,
+  name: String,
+  mail: String,
+  birthday: Date
+});
+// el schema describe la pinta de un documento de la coleccion
+
+// creamos el modelo llamando a mongoose.model(nombre, schema)
+const User = mongoose.model('User', UserSchema);
+
+// hay que exportar el modelo para usarlo despues en otros archivos
+module.exports = User;
+```
+
+El ejemplo de `User.js` es bien sencillo pero los _schemas_ tienen muchas características más que iremos viendo a medida que las necesitemos. La documentación oficial de Mongoose es la referencia para este tipo de cosas: https://mongoosejs.com/docs/guide.html.
+
+Con el modelo listo nos creamos un script llamado `populatedb.js` en la carpeta del proyecto y copiamos el siguiente código.
+
+```js
+// populatedb.js
+
+// necesitamos importar mongoose
+const mongoose = require('mongoose');
+
+// importar el modelo de usuario
+const User = require('./models/User');
+
+// la URI de la db
+const db = 'mongodb://localhost/hellodb';
+
+// array de usuarios para ingresar a la db
+const users = [
+  {
+    id: 1,
+    name: 'Juan',
+    mail: 'juan@mail.com',
+    birthday: '2000-05-24'
+  },
+  {
+    id: 2,
+    name: 'Maria',
+    mail: 'maria@mail.com',
+    birthday: '2000-02-13'
+  },
+  {
+    id: 3,
+    name: 'Pedro',
+    mail: 'pedro@mail.com',
+    birthday: '2000-05-19'
+  },
+  {
+    id: 4,
+    name: 'Julia',
+    mail: 'julia@mail.com',
+    birthday: '1998-03-01'
+  }
+];
+
+// conectarse a la db
+mongoose.set('useUnifiedTopology', true);
+mongoose.set('useFindAndModify', false);
+mongoose
+  .connect(db, { useNewUrlParser: true })
+  .then(() => {
+    // si nos conectamos con exito mostrar mensajes
+    // e insertar los usuarios en el array
+    console.log(`DB connected @ ${db}`);
+    console.log('Populating DB...');
+    User.insertMany(users, (err, users) => {
+      if (err) throw err;
+      // un mensaje con la cantidad de documentos insertados
+      console.log(`${users.length} documents inserted!`);
+      // cerramos la conexion cuando terminamos
+      mongoose.connection.close();
+    });
+  })
+.catch(err => console.error(`Connection error ${err}`));
+```
+
+No importa si no lo entienden del todo, en resumen lo que hace es conectarse a la base de datos y poner cuatro documentos en la colección `users`. Cuando termina se desconecta. Lo pueden ejecutar desde la terminal con `node populatedb.js`.
+
+Chequeamos con la shell de Mongo que el script haya hecho su trabajo.
+
+```
+$ mongo
+> show databases
+admin    0.000GB
+config   0.000GB
+hellodb  0.000GB
+local    0.000GB
+> use hellodb
+switched to hellodb
+> show collections
+users
+> db.users.find().pretty()
+{
+  "_id": ObjectId("5ee..."),
+  "id": 1,
+  "name": "Juan",
+  ... etc ...
+}
+... etc ...
+```
+
+Nos debería mostrar los cuatro objetos en la colección. Ya que estamos en la shell de Mongo probemos de agregar un usuario más desde ahí. Después salimos de la shell de Mongo con `exit`.
+
+```
+> db.users.insert({ id: 5, name: "Mario", mail: "mario@mail.com", birthday: new Date("1995-04-14") })
+WriteResult({ "nInserted" : 1 })
+> exit
+bye
+```
+
+Listo, tenemos base de datos para hacer _queries_.
 
 ## Haciendo queries
 

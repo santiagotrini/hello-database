@@ -385,4 +385,83 @@ Listo, API terminada. Pueden subir esta app a Heroku como hicimos la vez anterio
 
 ## Creando la base de datos (otra vez)
 
+Vamos a crear la base de datos en MongoDB Atlas. Para eso vamos a https://www.mongodb.com/cloud/atlas y nos logeamos.
+Nos recibe un dashboard en la sección de _clusters_. Creamos un nuevo _cluster_ que sería algo así como un grupo de bases de datos. Nosotros vamos a tener una sola base de datos con una sola colección, pero en la vida real se complica un poco más.
+
+![](img/new-cluster.png)
+
+Le damos al botón de crear un nuevo cluster. Nos lleva a la pantalla para elegir el tipo de servicio, elegimos la opción gratuita (_free tier_).
+
+![](img/free-tier.png)
+
+Luego nos deja elegir el proveedor y la región para nuestro cluster. Yo elegí AWS y North Virginia, pero pueden cambiar por otro.
+
+![](img/provider-region.png)
+
+Le dan al botón de crear cluster y los va a llevar de nuevo a la pantalla de clusters. Van a esperar unos minutos a que termine de crearse el cluster en los servidores.
+
+![](img/provisioning.png)
+
+Cuando termine le dan al botón de _collections_ y luego a _add my own data_.
+
+![](img/new-collection-1.png)
+
+![](img/new-database-1.png)
+
+En el nombre de la base de datos pongan `hellodb` y en el nombre de la colección `Collection0`.
+
+![](img/new-database-2.png)
+
+Antes de conectarse a la base de datos creamos un usuario de MongoDB. En el menú lateral buscamos _database access_ y agregamos un nuevo usuario.
+
+![](img/new-user-1.png)
+
+Le ponemos `hellodb` de nombre y lo demás como se muestra en la imagen, elijan un password.
+
+![](img/new-user-2.png)
+
+Volviendo a la sección de clusters le damos al botón de _connect_.
+
+![](img/cluster-connect.png)
+
+Como método de conexión elegimos conectar una aplicación.
+
+![](img/connection-method.png)
+
+Finalmente obtenemos la URI o _connection string_ que necesitamos para nuestro código. Ojo que hay que reemplazar usuario, contraseña y nombre de la base de datos.
+
+![](img/connection-string.png)
+
+Vamos a nuestro script `populatedb.js`, comentamos la URI de la base de datos local y ponemos la que nos dió MongoDB Atlas. No se olviden de reemplazar el password (sin los `<>`).
+
+```js
+// populatedb.js
+
+// la URI de la db
+const db = 'mongodb+srv://hellodb:<password>@cluster0-n6uib.mongodb.net/hellodb?retryWrites=true&w=majority';
+// const db = 'mongodb://localhost/hellodb';
+```
+
+Volvemos a ejecutar el script pero ahora vamos a estar insertando los documentos en nuestra base de datos recién creada.
+
+```
+$ node populatedb.js
+```
+
+Nos fijamos en la web de MongoDB Atlas que los documentos estén en la base de datos, usen el botón de _collections_ en la sección de clusters. Debería verse así.
+
+![](img/db-ready.png)
+
+Listo, ya tenemos una base de datos que podemos usar con Heroku. Falta decirle donde está y terminamos.
+
+## Decirle a Heroku donde está la base de datos
+
+Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+
+## ¿Y ahora?
+
+Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+
+## Guías, referencias y documentación
+
 Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.

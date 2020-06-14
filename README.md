@@ -466,8 +466,19 @@ En mi caso la API está en https://hello-database.herokuapp.com/api/users o http
 
 ## ¿Y ahora?
 
-Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+Ahora tenemos tres caminos por delante, yo sugiero seguirlos en el orden en que están listados.
+
+- Vemos como podemos utilizar la API de esta guía desde un _frontend_ hecho con HTML / CSS / JS en https://github.com/santiagotrini/hello-fetch.
+- Vemos con un poco más de detalle como funciona Express y la cadena de _middlewares_ en https://github.com/santiagotrini/hello-middleware.
+- Por último vemos como armar una app MVC donde todo, incluída la interfaz de usuario está en el _backend_ usando un motor de vistas en https://github.com/santiagotrini/hello-mvc.
+
+En esta guía utilizamos MongoDB como base de datos. En https://github.com/santiagotrini/hello-postgre les muestro como hacer algo parecido con PostgreSQL y de paso usamos la CLI de Heroku para subir nuestra app.
 
 ## Guías, referencias y documentación
 
-Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+Para los más curiosos les dejo algunos links.
+
+- La guía oficial de Mongoose en https://mongoosejs.com/docs/guide.html (en inglés).
+- Lo mismo pero de MongoDB Atlas, también en inglés en https://docs.atlas.mongodb.com/getting-started/.
+- Operaciones de CRUD (_create read update delete_) en la shell de Mongo https://docs.mongodb.com/manual/crud/.
+- Métodos de rutas en la guía oficial de Express (en español) https://expressjs.com/es/guide/routing.html.

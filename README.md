@@ -456,7 +456,13 @@ Listo, ya tenemos una base de datos que podemos usar con Heroku. Falta decirle d
 
 ## Decirle a Heroku donde está la base de datos
 
-Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+Doy por hecho que ya tienen la API hosteada en Heroku. Van al panel de control de su app en la web de Heroku y en la pestaña de _settings_ hay que agregar la URI de MongoDB en la sección de _config vars_ (variables de configuración).
+Recuerden reemplazar el password en la URI por el que eligieron ustedes.
+
+![](img/config-vars.png)
+
+Le dan al botón de agregar y hacen un deploy manual desde la pestaña de deploy.
+En mi caso la API está en https://hello-database.herokuapp.com/api/users o https://hello-database.herokuapp.com/api/user/1.
 
 ## ¿Y ahora?
 

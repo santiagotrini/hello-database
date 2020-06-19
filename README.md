@@ -454,6 +454,48 @@ Nos fijamos en la web de MongoDB Atlas que los documentos estén en la base de d
 
 Listo, ya tenemos una base de datos que podemos usar con Heroku. Falta decirle donde está y terminamos.
 
+## Agregar IPs a la whitelist de MongoDB Atlas
+
+Para que nuestra app de Heroku pueda conectarse a la base de datos en MongoDB Atlas necesitamos poner la ip del server de la app en una _whitelist_. Una _whitelist_ es una lista de lo que permitimos acceso, en este caso serían IPs de computadoras que tienen autorizado conectarse al cluster de base de datos que creamos en MongoDB Atlas.
+
+Idealmente solo queremos las IPs necesarias en esa _whitelist_, pero como estamos usando un hosting gratuito la IP de nuestro server puede cambiar en cualquier momento. Por eso simplemente vamos a poner todas las IPs posibles, que no es lo recomendable pero tampoco tenemos opción.
+
+![](img/network-access.png)
+
+En nuestro _dashboard_ de MongoDB Atlas vamos a Network Acess y usamos el botón de agregar IP. Ahí ponemos como IP `0.0.0.0/0` que significa justamente cualquier IP. Sino hacemos esto nuestra app de Heroku nos va a dar error de conexión cuando se intente conectar a la base de datos.
+
+![](img/add-ip.png)
+
+## Agregar CORS a la API
+
+Cuando querramos usar esta API mediante métodos AJAX (como `fetch()`) desde un dominio distinto al de la API nos vamos a encontrar con un error. Esto se debe a una política de seguridad de los navegadores web llamada SOP (_same origin policy_).
+
+Para poder usar la API desde un _frontend_ con distinto dominio del _backend_ tenemos que usar CORS (_cross-origin resource sharing_) que simplificando un poco, no es más que setear ciertos _headers_ en las respuestas del servidor (nuestra API). Una manera muy simple de lograr este objetivo es usar un paquete de npm llamado `cors` pensado para este tipo de aplicaciones en Express.
+
+No hay que hacer demasiado, simplemente en la terminal en la carpeta de nuestro proyecto instalamos `cors`.
+
+```
+$ npm install cors
+```
+
+Y agregamos las siguientes líneas a `index.js`.
+
+```js
+// index.js
+
+const express  = require('express');
+const mongoose = require('mongoose');
+// agregamos esta linea
+const cors     = require('cors');
+
+const app = express()
+
+// y esta otra
+app.use(cors());
+```
+
+Con eso tenemos la API lista para la próxima guía. El middleware `cors` se va encargar de agregar los _headers_ necesarios.
+
 ## Decirle a Heroku donde está la base de datos
 
 Doy por hecho que ya tienen la API hosteada en Heroku. Van al panel de control de su app en la web de Heroku y en la pestaña de _settings_ hay que agregar la URI de MongoDB en la sección de _config vars_ (variables de configuración).

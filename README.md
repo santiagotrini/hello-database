@@ -263,6 +263,7 @@ En la terminal hacemos unas carpetas y un archivo.
 $ mkdir routes
 $ cd routes
 $ mkdir api
+$ cd api
 $ touch user.js
 ```
 
